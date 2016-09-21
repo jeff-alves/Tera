@@ -19,7 +19,7 @@ class MessagesHandler(Thread):
                 self.C_CHECK_VERSION = C_CHECK_VERSION(msg)
                 print('Using opcodes v: ' + str(self.C_CHECK_VERSION.ver[0][1]))
                 self.opcodes = {}
-                with open('opcodes/' + str(self.C_CHECK_VERSION.ver[0][1]) + '.txt') as f:
+                with open('data/opcodes/' + str(self.C_CHECK_VERSION.ver[0][1]) + '.txt') as f:
                     for line in f:
                         (val, key) = line.split(" = ")
                         self.opcodes[int(key)] = val
