@@ -9,7 +9,7 @@ class MessagesHandler(Thread):
         self.setDaemon(True)
         self.messages = Queue()
         self.opcodes = None
-        self.ativo = True
+        self.enable = True
         self.C_CHECK_VERSION = None
 
     def run(self):
@@ -23,7 +23,7 @@ class MessagesHandler(Thread):
                     for line in f:
                         (val, key) = line.split(" = ")
                         self.opcodes[int(key)] = val
-        while self.ativo:
+        while self.enable:
             msg = self.messages.get()
             try:
                 # eval(self.opcodes[msg[2]])(msg[0], msg[1], msg[3])
@@ -33,4 +33,4 @@ class MessagesHandler(Thread):
                 print(msg[1], msg[2], msg[3].get_array_int(1))
 
     def stop(self):
-        self.ativo = False
+        self.enable = False

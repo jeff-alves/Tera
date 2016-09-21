@@ -9,12 +9,12 @@ class BlockSplitter(Thread):
         Thread.__init__(self)
         self.setDaemon(True)
         self.bytes = Queue()
-        self.ativo = True
+        self.enable = True
         self.msg_queue = msg_queue
         self.direction = direction
 
     def run(self):
-        while self.ativo:
+        while self.enable:
             block_size = self.bytes.get() | self.bytes.get() << 8
             opcode = self.bytes.get() | self.bytes.get() << 8
             block = Bytes()
@@ -23,7 +23,7 @@ class BlockSplitter(Thread):
             self.msg_queue.put((datetime.utcnow(), self.direction, opcode, block))
 
     def stop(self):
-        self.ativo = False
+        self.enable = False
 
     def add_data(self, data):
         for byte in data:
