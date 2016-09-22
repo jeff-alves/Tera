@@ -15,7 +15,7 @@ if __name__ == '__main__':
         msg_handler = MessagesHandler()
         c_splitter = BlockSplitter(1, msg_handler.messages)
         s_splitter = BlockSplitter(2, msg_handler.messages)
-        con_handler = ConnectionHandler(c_splitter, s_splitter)
+        con_handler = ConnectionHandler(msg_handler, c_splitter, s_splitter)
         sniffer = Sniffer(con_handler.queue)
 
         msg_handler.start()

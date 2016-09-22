@@ -19,8 +19,8 @@ class Ip(object):
         # self.ttl = iph[5]
         self.protocol = iph[6]
         # self.checksum = iph[7]
-        self.source_addr = socket.inet_ntoa(iph[8]);
-        self.destination_addr = socket.inet_ntoa(iph[9]);
+        self.source_addr = socket.inet_ntoa(iph[8])
+        self.destination_addr = socket.inet_ntoa(iph[9])
         # self.options = None
         self.data = data[header_length:]
 

@@ -80,5 +80,5 @@ class Cryptor(object):
 
             for j in xrange(0, remain):
                 buf[size + pre - remain + j] ^= (self._change_data >> (j * 8)) & 0xFF
-            self._change_len = 4 - remain;
+            self._change_len = 4 - remain
 

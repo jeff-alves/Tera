@@ -8,7 +8,7 @@ from net.tcp import Tcp
 
 class ConnectionHandler(Thread):
 
-    def __init__(self, c_splitter, s_splitter):
+    def __init__(self, msg_handler, c_splitter, s_splitter):
         Thread.__init__(self)
         self.setDaemon(True)
         self.server_ip = None
@@ -16,6 +16,7 @@ class ConnectionHandler(Thread):
         self.enable = True
         self.server_keys = []
         self.client_keys = []
+        self.msg_handler = msg_handler
         self.c_splitter = c_splitter
         self.s_splitter = s_splitter
         self.servers = {}
@@ -33,6 +34,7 @@ class ConnectionHandler(Thread):
             tcp = Tcp(ip.data)
             if len(tcp.data) == 4  and tcp.data.get_array_int(1) == [1, 0, 0, 0]:
                 self.server_ip = ip.source_addr
+                self.msg_handler.region = self.servers[self.server_ip][1]
                 print('Conected to: ' + self.servers[self.server_ip][0])
 
         while len(self.server_keys) < 2 or len(self.client_keys) < 2:

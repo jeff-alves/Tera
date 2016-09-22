@@ -39,9 +39,9 @@ def shift_key(key, n, direction=True):
     result = Bytes([0] * size)
     for i in xrange(0, size):
         if direction:
-            result[(i + n) % size] = key[i];
+            result[(i + n) % size] = key[i]
         else:
-            result[i] = key[(i + n) % size];
+            result[i] = key[(i + n) % size]
     return result
 
 def xor_key(key1, key2):
