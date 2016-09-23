@@ -1,17 +1,18 @@
+from util import tipo
 class S_PARTY_MEMBER_STAT_UPDATE(object):
 
-    def __init__(self, time, direction, opcode, reader, version):
-        ServerId = reader.ReadUInt32()
-        PlayerId = reader.ReadUInt32()
-        HpRemaining = reader.ReadInt32()
-        MpRemaining = reader.ReadInt32()
-        TotalHp = reader.ReadInt32()
-        TotalMp = reader.ReadInt32()
-        Level = reader.ReadInt16()
-        InCombat = reader.ReadInt16()
-        Vitality = reader.ReadInt16()
-        Alive = reader.ReadByte()  # not sure
-        Stamina = reader.ReadInt32()
-        ReRemaining = reader.ReadInt32()
-        TotalRe = reader.ReadInt32()
-        Unknow3 = reader.ReadInt32()
+    def __init__(self, time, direction, opcode, data, version):
+        server_id = data.read(tipo.uint32)
+        player_id = data.read(tipo.uint32)
+        cur_hp = data.read(tipo.int32)
+        cur_mp = data.read(tipo.int32)
+        max_hp = data.read(tipo.int32)
+        max_mp = data.read(tipo.int32)
+        level = data.read(tipo.int16)
+        in_combat = data.read(tipo.int16)
+        vitality = data.read(tipo.int16)
+        alive = data.read(tipo.byte)  # ?
+        stamina = data.read(tipo.int32)
+        cur_re = data.read(tipo.int32)
+        max_re = data.read(tipo.int32)
+        unk2 = data.read(tipo.int32)

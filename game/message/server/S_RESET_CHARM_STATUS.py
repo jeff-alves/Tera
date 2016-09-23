@@ -1,14 +1,15 @@
+from util import tipo
 class S_RESET_CHARM_STATUS(object):
 
-    def __init__(self, time, direction, opcode, reader, version):
-        count = reader.ReadUInt16()
-        offset = reader.ReadUInt16()
-        TargetId = reader.ReadEntityId()
-        Charms = []
+    def __init__(self, time, direction, opcode, data, version):
+        count = data.read(tipo.uint16)
+        offset = data.read(tipo.uint16)
+        target_id = data.read(tipo.uint64)
+        charms = []
         for i in xrange(1, count + 1):
-            reader.Skip(2)  # offset pointer
-            reader.Skip(2)  # next member offset
-            charmId = reader.ReadUInt32()
-            duration = reader.ReadUInt32()
-            status = reader.ReadByte()
-            Charms.append(status, charmId, duration)
+            data.skip(2)  # offset pointer
+            data.skip(2)  # next member offset
+            charmId = data.read(tipo.uint32)
+            duration = data.read(tipo.uint32)
+            status = data.read(tipo.byte)
+            charms.append(status, charmId, duration)

@@ -1,14 +1,15 @@
+from util import tipo
 class S_PARTY_MEMBER_CHARM_RESET(object):
 
-    def __init__(self, time, direction, opcode, reader, version):
-        count = reader.ReadUInt16()
-        offset = reader.ReadUInt16()
-        ServerId = reader.ReadUInt32()
-        PlayerId = reader.ReadUInt32()
-        Charms = []
+    def __init__(self, time, direction, opcode, data, version):
+        count = data.read(tipo.uint16)
+        offset = data.read(tipo.uint16)
+        server_id = data.read(tipo.uint32)
+        player_id = data.read(tipo.uint32)
+        charms = []
         for i in xrange(1, count + 1):
-            reader.Skip(4)  # offset pointer & next member offset
-            charmId = reader.ReadUInt32()
-            duration = reader.ReadUInt32()
-            status = reader.ReadByte()
-            Charms.append((status, charmId, duration))
+            data.skip(4)  # offset pointer & next member offset
+            charm_id = data.read(tipo.uint32)
+            duration = data.read(tipo.uint32)
+            status = data.read(tipo.byte)
+            charms.append((status, charm_id, duration))

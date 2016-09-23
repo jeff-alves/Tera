@@ -1,12 +1,13 @@
+from util import tipo
 class S_SPAWN_PROJECTILE(object):
 
-    def __init__(self, time, direction, opcode, reader, version):
-        Id = reader.ReadEntityId()
-        reader.Skip(4)
-        Model = reader.ReadInt32()
-        Start = reader.ReadVector3f()
-        Finish = reader.ReadVector3f()
-        unk1 = reader.ReadByte()
-        Speed = reader.ReadSingle()
-        OwnerId = reader.ReadEntityId()
-        unk2 = reader.ReadInt16()
+    def __init__(self, time, direction, opcode, data, version):
+        id = data.read(tipo.uint64)
+        unk1 = data.read(tipo.int32)
+        model = data.read(tipo.int32)
+        pos1 = data.read(tipo.float, 3)
+        pos2 = data.read(tipo.float, 3)
+        unk2 = data.read(tipo.byte)
+        speed = data.read(tipo.float)
+        source = data.read(tipo.uint64)
+        model = data.read(tipo.uint32)

@@ -1,5 +1,6 @@
+from util import tipo
 class S_TARGET_INFO(object):
 
-    def __init__(self, time, direction, opcode, reader, version):
-        reader.Skip(8)
-        Target = reader.ReadEntityId()
+    def __init__(self, time, direction, opcode, data, version):
+        data.skip(8)
+        target = data.read(tipo.uint64)
