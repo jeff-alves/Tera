@@ -2,6 +2,7 @@ from util import tipo
 class S_SPAWN_NPC(object):
 
     def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
         data.skip(6)
         if version == "KR": data.skip(4)  # not sure what's there
         id = data.read(tipo.uint64)

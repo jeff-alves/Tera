@@ -1,12 +1,27 @@
-from core.bytes import Bytes
-from game.message.server.S_EACH_SKILL_RESULT import S_EACH_SKILL_RESULT
-from util import tipo
+# from core.bytes import Bytes
+# from game.message.server.S_EACH_SKILL_RESULT import S_EACH_SKILL_RESULT
+# from util import tipo
+#
+#
+# data = Bytes([1, 2, 3, 4, 5])
+#
+# print(str(S_EACH_SKILL_RESULT).split('.')[3])
 
-
-data = Bytes([0, 0, 0, 0, 90, 54, 164, 15, 0, 128, 0, 1, 90, 54, 164, 15, 0, 128, 0, 1, 15, 39, 0, 0, 86, 131, 149, 7, 0, 0, 0, 0, 0, 0, 0, 0, 64, 153, 24, 4, 103, 30, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
-
-p = S_EACH_SKILL_RESULT(None, None, None, data, "USA")
-
-print(p)
-
-
+# import sys
+# from PyQt4.QtCore import QSize, Qt
+# from PyQt4.QtGui import QMainWindow, QStyle, qApp, QApplication
+# 
+# class mymainwindow(QMainWindow):
+#     def __init__(self):
+#         QMainWindow.__init__(self)
+#         self.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint | Qt.X11BypassWindowManagerHint)
+#         self.setWindowOpacity(0.5)
+#         self.setGeometry(QStyle.alignedRect(Qt.LeftToRight, Qt.AlignCenter, QSize(300, 50), qApp.desktop().availableGeometry()))
+# 
+#     def mousePressEvent(self, event):
+#         qApp.quit()
+# 
+# app = QApplication(sys.argv)
+# mywindow = mymainwindow()
+# mywindow.show()
+# app.exec_()

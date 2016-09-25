@@ -2,6 +2,7 @@ from util import tipo
 class S_ACTION_STAGE(object):
 
     def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
         effects_count = data.read(tipo.count)
         effects_offset = data.read(tipo.offset)
         source = data.read(tipo.uint64)

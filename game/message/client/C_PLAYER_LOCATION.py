@@ -9,7 +9,7 @@ class C_PLAYER_LOCATION(object):
         angle = data.read(tipo.int16)
         unk1 = data.read(tipo.int16)  # maybe is int32?
         pos2 = data.read(tipo.float, 3)
-        type = data.read(tipo.int32)
+        typ = data.read(tipo.int32)
         speed = data.read(tipo.int16)
         unk2 = data.read(tipo.byte)
         time = data.read(tipo.int32)

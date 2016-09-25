@@ -2,6 +2,7 @@ from util import tipo
 class S_EACH_SKILL_RESULT(object):
 
     def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
         SkillResultFlags = {
             1:'Bit0',  # Usually 1 for attacks, 0 for blocks/dodges but I don't understand its exact semantics yet
             2:'Heal',  # Bit0 == 1 + heal == 1 = mana
@@ -59,7 +60,7 @@ class S_EACH_SKILL_RESULT(object):
 #         time = data.read(tipo.int32)
 #
 #         damage = data.read(tipo.uint32)
-#         type = data.read(tipo.uint16)
+#         typ = data.read(tipo.uint16)
 #         type2 = data.read(tipo.uint16)
 #         crit = data.read(tipo.uint16)
 #         knockdown = data.read(tipo.byte)

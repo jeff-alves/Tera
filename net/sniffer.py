@@ -1,14 +1,17 @@
 import socket
+from threading import Thread
 
-class Sniffer(object):
+class Sniffer(Thread):
     def __init__(self, queue):
+        Thread.__init__(self)
+        self.setDaemon(True)
         self.queue = queue
         self.HOST = socket.gethostbyname(socket.gethostname())
         self.s = None
         self.b_size = 65565
         self.enable = True
 
-    def start_listening(self):
+    def run(self):
         self.s = socket.socket(socket.AF_INET, socket.SOCK_RAW, socket.IPPROTO_IP)
         self.s.bind((self.HOST, 0))
         self.s.setsockopt(socket.IPPROTO_IP, socket.IP_HDRINCL, 1)

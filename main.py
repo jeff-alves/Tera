@@ -1,5 +1,4 @@
 import argparse
-
 from core.block_splitter import BlockSplitter
 from core.connection_handler import ConnectionHandler
 from core.messages_handler import MessagesHandler
@@ -22,7 +21,9 @@ if __name__ == '__main__':
         c_splitter.start()
         s_splitter.start()
         con_handler.start()
-        sniffer.start_listening()
+        sniffer.start()
+
+        msg_handler.join()
 
     except KeyboardInterrupt:
         print('Ctrl+C')

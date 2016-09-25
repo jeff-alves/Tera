@@ -2,6 +2,7 @@ from util import tipo
 class S_LOGIN(object):
 
     def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
         name_offset = data.read(tipo.offset)
         data.skip(8)
 #         details_offset = data.read(tipo.offset)

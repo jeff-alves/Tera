@@ -2,6 +2,7 @@ from util import tipo
 class S_WHISPER(object):
 
     def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
         author_offset = data.read(tipo.offset)
         recipient_offset = data.read(tipo.offset)
         message_offset = data.read(tipo.offset)

@@ -1,6 +1,9 @@
+from util import tipo
 class S_REQUEST_CONTRACT(object):
 
-    def __init__(self, time, direction, opcode, reader, version):
+    def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
+
         RequestType = {
             15:'DungeonTeleporter',
             8:'Mailbox',
@@ -16,10 +19,10 @@ class S_REQUEST_CONTRACT(object):
             3:'TradeRequest'
         }
 
-        reader.Skip(24)
-        Type = RequestType[reader.ReadInt16()]
-        reader.Skip(14)
-        # unk3 = reader.ReadInt32()
-        # time = reader.ReadInt32()
-        Sender = reader.ReadTeraString()
-        Recipient = reader.ReadTeraString()
+        data.skip(24)
+        Type = RequestType[data.read(tipo.int16)]
+        data.skip(14)
+        # unk3 = data.read(tipo.int32)
+        # time = data.read(tipo.int32)
+        Sender = data.read(tipo.string)
+        Recipient = data.read(tipo.string)

@@ -1,11 +1,13 @@
+from util import tipo
 class S_TRADE_BROKER_DEAL_SUGGESTED(object):
 
-    def __init__(self, time, direction, opcode, reader, version):
-        Unknown = reader.ReadInt64()
-        reader.Skip(14)
-        SellerPrice = reader.ReadInt64()
-        OfferedPrice = reader.ReadInt64()
-        PlayerName = reader.ReadTeraString()
+    def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
+        Unknown = data.read(tipo.int64)
+        data.skip(14)
+        SellerPrice = data.read(tipo.int64)
+        OfferedPrice = data.read(tipo.int64)
+        PlayerName = data.read(tipo.string)
 
     def gold(self, price):
         return str(price)[0:-4]

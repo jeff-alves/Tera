@@ -2,6 +2,7 @@ from util import tipo
 class S_GET_USER_LIST(object):
 
     def __init__(self, time, direction, opcode, data, version):
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
         count = data.read(tipo.count)
         offset = data.read(tipo.offset)
         player_guilds = []

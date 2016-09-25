@@ -2,4 +2,5 @@ from util import tipo
 class S_ENABLE_CHARM_STATUS(object):
 
     def __init__(self, time, direction, opcode, data, version):
-        id = data.read(tipo.uint32) 
+        print(str(type(self)).split('.')[3], len(data), data.get_array_int(1))
+        id = data.read(tipo.uint32)
