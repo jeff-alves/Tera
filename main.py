@@ -1,20 +1,33 @@
-import argparse
 from core.block_splitter import BlockSplitter
 from core.connection_handler import ConnectionHandler
 from core.messages_handler import MessagesHandler
+from game.message.opcodes_database import OpcodesDatabase
+from game.services.abnormal_database import AbnormalDatabase
+from game.services.hot_dot_database import HotDotDatabase
+from game.services.icon_database import IconDatabase
+from game.services.npc_database import NpcDatabase
+from game.services.server_database import ServerDatabase
+from game.services.skill_database import SkillDatabase
+from game.tracker import Tracker
 from net.sniffer import Sniffer
+from util.enums import MessageDirection
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Tera sniffer')
-    parser.add_argument('-n', default='0')
-    args = parser.parse_args()
-
     try:
-        msg_handler = MessagesHandler()
-        c_splitter = BlockSplitter(1, msg_handler.messages)
-        s_splitter = BlockSplitter(2, msg_handler.messages)
-        con_handler = ConnectionHandler(msg_handler, c_splitter, s_splitter)
+        servers_db = ServerDatabase()
+        abnormal_db = AbnormalDatabase()
+        hot_dot_db = HotDotDatabase()
+        icon_db = IconDatabase()
+        npc_db = NpcDatabase()
+        skill_db = SkillDatabase()
+        opcodes_db = OpcodesDatabase()
+        tracker = Tracker()
+
+        msg_handler = MessagesHandler(tracker, servers_db, opcodes_db)
+        c_splitter = BlockSplitter(MessageDirection(1), msg_handler.messages)
+        s_splitter = BlockSplitter(MessageDirection(2), msg_handler.messages)
+        con_handler = ConnectionHandler(servers_db, c_splitter, s_splitter)
         sniffer = Sniffer(con_handler.queue)
 
         msg_handler.start()

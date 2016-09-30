@@ -2,38 +2,34 @@
 from Queue import Queue
 from threading import Thread
 
-from game.message.client.C_CHECK_VERSION import C_CHECK_VERSION
-from game.message.parse_opcodes import parse_opcodes
-from game.trackers.player import Player
-
+from game.message.C.C_CHECK_VERSION import C_CHECK_VERSION
 
 class MessagesHandler(Thread):
 
-    def __init__(self):
+    def __init__(self, tracker, servers_db, opcodes_db):
         Thread.__init__(self)
         self.setDaemon(True)
         self.messages = Queue()
-        self.opcodes = None
         self.enable = True
-        self.opcodes_v = None
-        self.region = None
-        self.player = Player()
+        self.opcodes_db = opcodes_db
+        self.servers_db = servers_db
+        self.tracker = tracker
 
     def run(self):
-        while not self.opcodes_v:
+        while not self.opcodes_db.opcodes_v:
             msg = self.messages.get()
             if msg[2] == 19900:
-                self.opcodes_v = str(C_CHECK_VERSION(msg[0], msg[1], msg[2], msg[3], self.region).ver[0][1])
-        self.opcodes = parse_opcodes(self.opcodes_v)
-        print('Using opcodes: ' + str(self.opcodes_v))
+                self.opcodes_db.read(str(C_CHECK_VERSION(self.tracker, msg[0], msg[1], msg[2], msg[3], None).ver[0][1]))
+
+        print('Using opcodes: ' + str(self.opcodes_db.opcodes_v))
         while self.enable:
             msg = self.messages.get()
-            cls = self.opcodes.get(msg[2])
+            cls = self.opcodes_db.get(msg[2])
             if cls:
                 try:
-                    cls(msg[0], msg[1], msg[2], msg[3], self.region)  # create game opcode class
+                    cls(self.tracker, msg[0], msg[1], msg[2], msg[3], self.servers_db.selected[1])
                 except Exception as e:
-                    print(e, self.opcodes[msg[2]], msg[3])
+                    print(e, self.opcodes_db[msg[2]], msg[3])
 
     def stop(self):
         self.enable = False
