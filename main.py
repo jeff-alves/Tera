@@ -15,6 +15,7 @@ from util.enums import MessageDirection
 
 if __name__ == '__main__':
     try:
+        print('Reading databases...')
         servers_db = ServerDatabase()
         abnormal_db = AbnormalDatabase()
         hot_dot_db = HotDotDatabase()

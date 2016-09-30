@@ -15,3 +15,4 @@ class OpcodesDatabase(dict):
                 except Exception as e:
                     # print(val, e)
                     pass
+        print('Parsing opcodes: ', self)

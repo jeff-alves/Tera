@@ -1,4 +1,5 @@
 from game.trackers.abnormality import Abnormality
+from game.trackers.party import Party
 from game.trackers.player import Player
 
 
@@ -12,4 +13,5 @@ class Tracker(object):
 
     def __init__(self):
         self.player = Player(self)
+        self.party = Party(self)
         self.abnormality = Abnormality(self)

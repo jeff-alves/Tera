@@ -24,11 +24,11 @@ class NpcDatabase(dict):
         zone_id = int(zone_id)
         m_id = int(m_id)
         is_boss = (True if is_boss.lower() == 'true' else False) if is_boss != None else None
-        tmp = self.get((zone_id, m_id))
+        tmp = self.pop((zone_id, m_id), None)
         if tmp:
             zone_name = zone_name if zone_name else tmp[0]
             name = name if name else tmp[1]
             is_boss = is_boss if is_boss != None else tmp[2]
             hp = hp if hp else tmp[3]
-            del self[(zone_id, m_id)]
+
         self[(zone_id, m_id)] = (zone_name, name, is_boss, float(hp))

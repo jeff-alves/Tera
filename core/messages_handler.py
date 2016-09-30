@@ -29,7 +29,7 @@ class MessagesHandler(Thread):
                 try:
                     cls(self.tracker, msg[0], msg[1], msg[2], msg[3], self.servers_db.selected[1])
                 except Exception as e:
-                    print(e, self.opcodes_db[msg[2]], msg[3])
+                    print(e, cls, msg[3].get_array_hex(1))
 
     def stop(self):
         self.enable = False

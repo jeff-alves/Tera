@@ -22,7 +22,7 @@ class SkillDatabase(dict):
         gender = getattr(Gender, gender) if gender else None
         pclass = getattr(PlayerClass, pclass) if pclass else None
         b = (True if b.lower() == 'true' else False) if b != None else None
-        tmp = self.get(id)
+        tmp = self.pop(id, None)
         if tmp:
             race = race if race else tmp[0]
             gender = gender if gender else tmp[1]
@@ -31,6 +31,5 @@ class SkillDatabase(dict):
             b = b if b != None else tmp[4]
             hit = hit if hit else tmp[5]
             icon = icon if icon else tmp[6]
-            del self[id]
 
         self[id] = (race, gender, pclass, name, b, hit, icon.strip())
