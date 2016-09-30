@@ -1,8 +1,8 @@
 
 class Player(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, super):
+        self.super = super
 
     def pos(self, pos1, pos2, angle, speed, typ, time):
         self.pos1 = pos1

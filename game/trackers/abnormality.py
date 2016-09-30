@@ -1,7 +1,7 @@
 class Abnormality(object):
 
-    def __init__(self):
-        pass
+    def __init__(self, super):
+        self.super = super
 
     def add(self, target, source, abnormality_id, duration, stacks):
         self.target = target
