@@ -5,9 +5,14 @@ from zipfile import ZipFile
 from PIL import Image
 
 class IconDatabase(dict):
+    __instance = None
+
+    def __new__(self, *args, **kwargs):  # Singleton
+        if not IconDatabase.__instance:
+            IconDatabase.__instance = dict.__new__(self, *args, **kwargs)
+        return IconDatabase.__instance
 
     def __init__(self):
-        dict.__init__(self)
         with ZipFile('data/icons.zip') as f:
             for name_f in f.namelist():
                 name, ext = name_f.rsplit('.', 1)

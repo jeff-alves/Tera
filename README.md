@@ -1,6 +1,6 @@
-# Tera
+# Tera Bot/DPS
 
-Work in progress to DPS
+Work in progress to Bot/DPS (80%)
 
 Sniffer and pack analizer written python_2.7 for TERA
 

@@ -1,7 +1,12 @@
 class OpcodesDatabase(dict):
+    __instance = None
+
+    def __new__(self, *args, **kwargs):  # Singleton
+        if not OpcodesDatabase.__instance:
+            OpcodesDatabase.__instance = dict.__new__(self, *args, **kwargs)
+        return OpcodesDatabase.__instance
 
     def __init__(self, ver=None):
-        dict.__init__(self)
         self.opcodes_v = None
         if ver: self.read(ver)
 
@@ -15,4 +20,4 @@ class OpcodesDatabase(dict):
                 except Exception as e:
                     # print(val, e)
                     pass
-        print('Parsing opcodes: ', self)
+        # print('Parsing opcodes: ', self)

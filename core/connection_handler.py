@@ -1,13 +1,18 @@
 from Queue import Queue
 from threading import Thread
-from mock import self
+
 from crypt.session import Session
+from game.services.hot_dot_database import HotDotDatabase
+from game.services.npc_database import NpcDatabase
+from game.services.server_database import ServerDatabase
+from game.services.skill_database import SkillDatabase
 from net.ip import Ip
 from net.tcp import Tcp
 
+
 class ConnectionHandler(Thread):
 
-    def __init__(self, servers_db, c_splitter, s_splitter):
+    def __init__(self, c_splitter, s_splitter):
         Thread.__init__(self)
         self.setDaemon(True)
         self.queue = Queue()
@@ -16,7 +21,7 @@ class ConnectionHandler(Thread):
         self.s_splitter = s_splitter
         self.server_keys = []
         self.client_keys = []
-        self.servers_db = servers_db
+        self.servers_db = ServerDatabase()
 
     def run(self):
         print('Waiting to initial connection to server...')
@@ -37,6 +42,11 @@ class ConnectionHandler(Thread):
                 else:  # sent
                     self.client_keys.append(tcp.data)
         self.session = Session(self.server_keys, self.client_keys)
+
+        SkillDatabase().read(self.servers_db.selected[1])
+        HotDotDatabase().read(self.servers_db.selected[1])
+        NpcDatabase().read(self.servers_db.selected[1])
+
         while self.enable:
             ip = Ip(self.queue.get())
             if ip.protocol != 6 or (ip.source_addr != self.servers_db.selected[0] and ip.destination_addr != self.servers_db.selected[0]): continue

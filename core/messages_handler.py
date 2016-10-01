@@ -1,19 +1,21 @@
 # from ConfigParser import ConfigParser
 from Queue import Queue
 from threading import Thread
-
 from game.message.C.C_CHECK_VERSION import C_CHECK_VERSION
+from game.message.opcodes_database import OpcodesDatabase
+from game.services.server_database import ServerDatabase
+from game.tracker import Tracker
 
 class MessagesHandler(Thread):
 
-    def __init__(self, tracker, servers_db, opcodes_db):
+    def __init__(self):
         Thread.__init__(self)
         self.setDaemon(True)
         self.messages = Queue()
         self.enable = True
-        self.opcodes_db = opcodes_db
-        self.servers_db = servers_db
-        self.tracker = tracker
+        self.opcodes_db = OpcodesDatabase()
+        self.servers_db = ServerDatabase()
+        self.tracker = Tracker()
 
     def run(self):
         while not self.opcodes_db.opcodes_v:

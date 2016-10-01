@@ -1,16 +1,3 @@
-
-import inspect
-
-class teste():
-    def ttt(self):
-        print self.__class__.__name__
-        print inspect.stack()[0][3]
-
-a = teste()
-a.ttt()
-
-
-
 # from core.bytes import Bytes
 # from game.message.S.S_LOGIN import S_LOGIN
 #
@@ -23,8 +10,12 @@ a.ttt()
 # from game.services.npc_database import NpcDatabase
 # test = NpcDatabase('NA')
 #
-# from game.services.skill_database import SkillDatabase
-# test = SkillDatabase('NA')
+from game.services.skill_database import SkillDatabase
+from util.enums import PlayerClass
+test = SkillDatabase('NA')
+test2 = SkillDatabase()
+
+print(test.get((180300, PlayerClass(7))))
 
 # from game.services.abnormal_database import AbnormalDatabase
 # test = AbnormalDatabase()

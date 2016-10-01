@@ -12,6 +12,7 @@ class Tracker(object):
         return Tracker.__instance
 
     def __init__(self):
+        self.entity = {}
         self.player = Player(self)
         self.party = Party(self)
         self.abnormality = Abnormality(self)

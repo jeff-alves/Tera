@@ -1,9 +1,14 @@
 from util.enums import DotType
 
 class HotDotDatabase(dict):
+    __instance = None
+
+    def __new__(self, *args, **kwargs):  # Singleton
+        if not HotDotDatabase.__instance:
+            HotDotDatabase.__instance = dict.__new__(self, *args, **kwargs)
+        return HotDotDatabase.__instance
 
     def __init__(self, loc=None):
-        dict.__init__(self)
         if loc: self.read(loc)
 
     def read(self, loc):

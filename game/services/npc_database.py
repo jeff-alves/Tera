@@ -1,9 +1,14 @@
 import xml.etree.ElementTree as ET
 
 class NpcDatabase(dict):
+    __instance = None
+
+    def __new__(self, *args, **kwargs):  # Singleton
+        if not NpcDatabase.__instance:
+            NpcDatabase.__instance = dict.__new__(self, *args, **kwargs)
+        return NpcDatabase.__instance
 
     def __init__(self, loc=None):
-        dict.__init__(self)
         if loc: self.read(loc)
 
     def read(self, loc):

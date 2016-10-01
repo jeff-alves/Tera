@@ -1,8 +1,13 @@
 from util.enums import Race, Gender, PlayerClass
 class SkillDatabase(dict):
+    __instance = None
+
+    def __new__(self, *args, **kwargs):  # Singleton
+        if not SkillDatabase.__instance:
+            SkillDatabase.__instance = dict.__new__(self, *args, **kwargs)
+        return SkillDatabase.__instance
 
     def __init__(self, loc=None):
-        dict.__init__(self)
         if loc: self.read(loc)
 
     def read(self, loc):
@@ -22,7 +27,7 @@ class SkillDatabase(dict):
         gender = getattr(Gender, gender) if gender else None
         pclass = getattr(PlayerClass, pclass) if pclass else None
         b = (True if b.lower() == 'true' else False) if b != None else None
-        tmp = self.pop(id, None)
+        tmp = self.pop((id, pclass), None)
         if tmp:
             race = race if race else tmp[0]
             gender = gender if gender else tmp[1]
@@ -32,4 +37,4 @@ class SkillDatabase(dict):
             hit = hit if hit else tmp[5]
             icon = icon if icon else tmp[6]
 
-        self[id] = (race, gender, pclass, name, b, hit, icon.strip())
+        self[(id, pclass)] = (race, gender, pclass, name, b, hit, icon.strip())

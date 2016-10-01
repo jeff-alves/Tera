@@ -75,13 +75,20 @@ class Types(Enum):
     SuperArmor = 283
     Charm = 65535
 
-class SkillResultFlags(Enum):
-    Bit0 = 1  # Usually 1 for attacks, 0 for blocks/dodges but I don't understand its exact semantics yet
-    Heal = 2  # Bit0 == 1 + heal == 1 = mana
-    Bit2 = 4
-    IsDfaResolve = 4
-    Bit16 = 0x10000
-    Bit18 = 0x40000
+class SkillType(Enum):
+    Block_dodge = 0
+    Atack = 1
+    Heal = 2
+    Useless = 4
+
+# class SkillResultFlags(Enum):
+#     Block_dodge = 0  # test
+#     Bit0 = 1  # Usually 1 for attacks, 0 for blocks/dodges but I don't understand its exact semantics yet
+#     Heal = 2  # Bit0 == 1 + heal == 1 = mana
+#     Bit2 = 4
+#     IsDfaResolve = 4
+#     Bit16 = 0x10000
+#     Bit18 = 0x40000
 
 class PlayerClass(Enum):
     Warrior = 1
@@ -99,7 +106,7 @@ class PlayerClass(Enum):
     Common = 255
 
 class Race(Enum):
-    Human = 1
+    Human = 0
     Highelf = 1
     Aman = 2
     Castanic = 3

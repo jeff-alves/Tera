@@ -11,7 +11,7 @@ class S_LOGIN(object):
         model = data.read(tipo.uint32)
         dic['race'] = Race((model - 100) / 200 % 50)
         dic['gender'] = Gender(model / 100 % 2)
-        dic['classe'] = PlayerClass(model % 100)
+        dic['class'] = PlayerClass(model % 100)
 
         dic['id'] = data.read(tipo.uint64)
         dic['server_id'] = data.read(tipo.uint32)
