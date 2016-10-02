@@ -1,12 +1,10 @@
-class OpcodesDatabase(dict):
-    __instance = None
+from util.util import singleton
 
-    def __new__(self, *args, **kwargs):  # Singleton
-        if not OpcodesDatabase.__instance:
-            OpcodesDatabase.__instance = dict.__new__(self, *args, **kwargs)
-        return OpcodesDatabase.__instance
+@singleton
+class OpcodesDatabase(dict):
 
     def __init__(self, ver=None):
+        dict.__init__(self)
         self.opcodes_v = None
         if ver: self.read(ver)
 

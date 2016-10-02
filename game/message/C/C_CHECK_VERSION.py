@@ -1,7 +1,7 @@
 from util.tipo import tipo
 class C_CHECK_VERSION(object):
 
-    def __init__(self, tracker, time, direction, opcode, data, version):
+    def __init__(self, tracker, time, direction, opcode, data):
         count = data.read(tipo.count)
         offset = data.read(tipo.offset)
         self.ver = []

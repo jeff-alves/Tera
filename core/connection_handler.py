@@ -31,28 +31,28 @@ class ConnectionHandler(Thread):
             tcp = Tcp(ip.data)
             if len(tcp.data) == 4  and tcp.data.get_array_int(1) == [1, 0, 0, 0]:
                 self.servers_db.selected = self.servers_db[ip.source_addr]
-        print('Conected to: ' + self.servers_db.selected[3])
+        print('Conected to: ' + self.servers_db.selected['name'])
         while len(self.server_keys) < 2 or len(self.client_keys) < 2:
             ip = Ip(self.queue.get())
-            if ip.protocol != 6 or (ip.source_addr != self.servers_db.selected[0] and ip.destination_addr != self.servers_db.selected[0]): continue
+            if ip.protocol != 6 or (ip.source_addr != self.servers_db.selected['ip'] and ip.destination_addr != self.servers_db.selected['ip']): continue
             tcp = Tcp(ip.data)
             if tcp.data.len() == 128:
-                if ip.source_addr == self.servers_db.selected[0]:  # received
+                if ip.source_addr == self.servers_db.selected['ip']:  # received
                     self.server_keys.append(tcp.data)
                 else:  # sent
                     self.client_keys.append(tcp.data)
         self.session = Session(self.server_keys, self.client_keys)
 
-        SkillDatabase().read(self.servers_db.selected[1])
-        HotDotDatabase().read(self.servers_db.selected[1])
-        NpcDatabase().read(self.servers_db.selected[1])
+        SkillDatabase().read(self.servers_db.selected['location'])
+        HotDotDatabase().read(self.servers_db.selected['location'])
+        NpcDatabase().read(self.servers_db.selected['location'])
 
         while self.enable:
             ip = Ip(self.queue.get())
-            if ip.protocol != 6 or (ip.source_addr != self.servers_db.selected[0] and ip.destination_addr != self.servers_db.selected[0]): continue
+            if ip.protocol != 6 or (ip.source_addr != self.servers_db.selected['ip'] and ip.destination_addr != self.servers_db.selected['ip']): continue
             tcp = Tcp(ip.data)
             if not tcp.data.len(): continue
-            if ip.source_addr == self.servers_db.selected[0]:  # received
+            if ip.source_addr == self.servers_db.selected['ip']:  # received
                 self.session.encrypt(tcp.data)
                 self.s_splitter.add_data(tcp.data)
             else:  # sent

@@ -1,16 +1,16 @@
-from game.services.skill_database import SkillDatabase
+from game.services.server_database import ServerDatabase
 from util.enums import SkillType
 from util.tipo import tipo
 
 
 class S_EACH_SKILL_RESULT(object):
 
-    def __init__(self, tracker, time, direction, opcode, data, version):
+    def __init__(self, tracker, time, direction, opcode, data):
         dic = {}
         data.skip(4)
-        dic['source'] = data.read(tipo.uint64)
-        if version == "KR": data.skip(8)
-        dic['target'] = data.read(tipo.uint64)
+        source_id = data.read(tipo.uint64)
+        if ServerDatabase().selected['location'] == "KR": data.skip(8)
+        dic['target_id'] = data.read(tipo.uint64)
         # I think it s some kind of source ID.
         # When I use a skill against any monstrer, it s always the same value
         # When I pick up a mana mote, differente ID
@@ -29,14 +29,5 @@ class S_EACH_SKILL_RESULT(object):
         dic['position'] = data.read(tipo.float, 3)
         dic['angle'] = data.read(tipo.angle) * 360. / 0x10000
 
-        print('---------------------------')
-        player = tracker.player.dic
-        if dic['source'] == player.get('id'):
-            skill = SkillDatabase().get((dic['skill_id'], player['class']))
-            print(player)
-            print(skill)
-            print(dic)
-        else:
-            print(dic)
-        print('---------------------------')
+        tracker.get_entity(source_id).skill(dic)
 

@@ -1,7 +1,7 @@
 from util.tipo import tipo
 class S_ABNORMALITY_BEGIN(object):
 
-    def __init__(self, tracker, time, direction, opcode, data, version):
+    def __init__(self, tracker, time, direction, opcode, data):
         dic = {}
         dic['target'] = data.read(tipo.uint64)
         dic['source'] = data.read(tipo.uint64)

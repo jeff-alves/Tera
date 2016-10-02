@@ -1,7 +1,7 @@
 from util.tipo import tipo
 class S_PLAYER_STAT_UPDATE(object):
 
-    def __init__(self, tracker, time, direction, opcode, data, version):
+    def __init__(self, tracker, time, direction, opcode, data):
         print(str(type(self)).split('.')[3]+'('+str(len(data))+'): '+ str(data.get_array_hex(1))[1:-1])
         HpRemaining = data.read(tipo.int32)
         MpRemaining = data.read(tipo.int32)
@@ -59,7 +59,7 @@ class S_PLAYER_STAT_UPDATE(object):
         ItemLevel = data.read(tipo.int32)
 
 
-#     def __init__(self, tracker, time, direction, opcode, data, version):
+#     def __init__(self, tracker, time, direction, opcode, data):
 #         cur_hp = data.read(tipo.int32)
 #         cur_mp = data.read(tipo.int32)
 #         unk1 = data.read(tipo.int32)

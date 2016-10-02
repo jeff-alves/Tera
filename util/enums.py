@@ -1,5 +1,9 @@
 from enum import Enum
 
+class DespawnReason(Enum):
+    OutView = 1
+    Dead = 5
+
 class IpProtocol(Enum):
     tcp = 6
     udp = 17
@@ -10,6 +14,11 @@ class HitDirection(Enum):
     Front = 3
     Dot = 4
     Pet = 5
+
+class Category(Enum):
+    Player = 0
+    User = 1
+    NPC = 2
 
 class Gender(Enum):
     Female = 0

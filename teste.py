@@ -1,3 +1,13 @@
+t = {9292:'jeff', 'aaa':222}
+
+
+for key in t:
+   print "key: %s , value: %s" % (key, t[key])
+
+
+
+
+
 # from core.bytes import Bytes
 # from game.message.S.S_LOGIN import S_LOGIN
 #
@@ -10,12 +20,12 @@
 # from game.services.npc_database import NpcDatabase
 # test = NpcDatabase('NA')
 #
-from game.services.skill_database import SkillDatabase
-from util.enums import PlayerClass
-test = SkillDatabase('NA')
-test2 = SkillDatabase()
-
-print(test.get((180300, PlayerClass(7))))
+# from game.services.skill_database import SkillDatabase
+# from util.enums import PlayerClass
+# test = SkillDatabase('NA')
+# test2 = SkillDatabase()
+#
+# print(test.get((180300, PlayerClass(7))))
 
 # from game.services.abnormal_database import AbnormalDatabase
 # test = AbnormalDatabase()

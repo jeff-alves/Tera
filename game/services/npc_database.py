@@ -1,14 +1,12 @@
+from util.util import singleton
 import xml.etree.ElementTree as ET
 
-class NpcDatabase(dict):
-    __instance = None
 
-    def __new__(self, *args, **kwargs):  # Singleton
-        if not NpcDatabase.__instance:
-            NpcDatabase.__instance = dict.__new__(self, *args, **kwargs)
-        return NpcDatabase.__instance
+@singleton
+class NpcDatabase(dict):
 
     def __init__(self, loc=None):
+        dict.__init__(self)
         if loc: self.read(loc)
 
     def read(self, loc):
@@ -31,9 +29,9 @@ class NpcDatabase(dict):
         is_boss = (True if is_boss.lower() == 'true' else False) if is_boss != None else None
         tmp = self.pop((zone_id, m_id), None)
         if tmp:
-            zone_name = zone_name if zone_name else tmp[0]
-            name = name if name else tmp[1]
-            is_boss = is_boss if is_boss != None else tmp[2]
-            hp = hp if hp else tmp[3]
+            zone_name = zone_name if zone_name else tmp['zone_name']
+            name = name if name else tmp['name']
+            is_boss = is_boss if is_boss != None else tmp['is_boss']
+            hp = hp if hp else tmp['hp_total']
 
-        self[(zone_id, m_id)] = (zone_name, name, is_boss, float(hp))
+        self[(zone_id, m_id)] = {'zone_name':zone_name, 'name':name, 'is_boss':is_boss, 'hp_total':float(hp)}

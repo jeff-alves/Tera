@@ -1,12 +1,10 @@
-class ServerDatabase(dict):
-    __instance = None
+from util.util import singleton
 
-    def __new__(self, *args, **kwargs):  # Singleton
-        if not ServerDatabase.__instance:
-            ServerDatabase.__instance = dict.__new__(self, *args, **kwargs)
-        return ServerDatabase.__instance
+@singleton
+class ServerDatabase(dict):
 
     def __init__(self):
+        dict.__init__(self)
         self.selected = None
         with open('data/servers.txt') as f:
             for line in f:
@@ -17,5 +15,5 @@ class ServerDatabase(dict):
 
     def add(self, ip, loc, id, name):
         id = int(id)
-        self[ip] = (ip, loc, id, name.strip())
-        self[id] = (ip, loc, id, name.strip())
+        self[ip] = {'ip':ip, 'location':loc, 'id':id, 'name':name.strip()}
+        self[id] = {'ip':ip, 'location':loc, 'id':id, 'name':name.strip()}

@@ -1,14 +1,11 @@
 from util.enums import DotType
+from util.util import singleton
 
+@singleton
 class HotDotDatabase(dict):
-    __instance = None
-
-    def __new__(self, *args, **kwargs):  # Singleton
-        if not HotDotDatabase.__instance:
-            HotDotDatabase.__instance = dict.__new__(self, *args, **kwargs)
-        return HotDotDatabase.__instance
 
     def __init__(self, loc=None):
+        dict.__init__(self)
         if loc: self.read(loc)
 
     def read(self, loc):
@@ -21,5 +18,5 @@ class HotDotDatabase(dict):
         self.add(8888889, 'CritPower', 0, 0, 0, 0, 0, 0, 'Slaying', '', "'Slaying' crystal is working (if equipped) when player in this state.", 'slaying')
 
     def add(self, id, tp, hp, mp, method, time, tick, amount, name, item_name, tooltip, icon_name):
-        meth = getattr(DotType, method) if method else None
-        self[int(id)] = (tp, float(hp), float(mp), meth, int(time), int(tick), float(amount), name, item_name, tooltip, icon_name.strip())
+        method = getattr(DotType, method) if method else None
+        self[int(id)] = {'tp':tp, 'hp':float(hp), 'mp':float(mp), 'method':method, 'time':int(time), 'tick':int(tick), 'amount':float(amount), 'name':name, 'item_name':item_name, 'tooltip':tooltip, 'icon_name':icon_name.strip()}

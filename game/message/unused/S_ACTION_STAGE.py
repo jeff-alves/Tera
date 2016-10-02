@@ -1,7 +1,7 @@
 from util.tipo import tipo
 class S_ACTION_STAGE(object):
 
-    def __init__(self, tracker, time, direction, opcode, data, version):
+    def __init__(self, tracker, time, direction, opcode, data):
         print(str(type(self)).split('.')[3]+'('+str(len(data))+'): '+ str(data.get_array_hex(1))[1:-1])
         effects_count = data.read(tipo.count)
         effects_offset = data.read(tipo.offset)

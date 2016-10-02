@@ -1,13 +1,11 @@
 from util.enums import Race, Gender, PlayerClass
-class SkillDatabase(dict):
-    __instance = None
+from util.util import singleton
 
-    def __new__(self, *args, **kwargs):  # Singleton
-        if not SkillDatabase.__instance:
-            SkillDatabase.__instance = dict.__new__(self, *args, **kwargs)
-        return SkillDatabase.__instance
+@singleton
+class SkillDatabase(dict):
 
     def __init__(self, loc=None):
+        dict.__init__(self)
         if loc: self.read(loc)
 
     def read(self, loc):
@@ -29,12 +27,12 @@ class SkillDatabase(dict):
         b = (True if b.lower() == 'true' else False) if b != None else None
         tmp = self.pop((id, pclass), None)
         if tmp:
-            race = race if race else tmp[0]
-            gender = gender if gender else tmp[1]
-            pclass = pclass if pclass else tmp[2]
-            name = name if name else tmp[3]
-            b = b if b != None else tmp[4]
-            hit = hit if hit else tmp[5]
-            icon = icon if icon else tmp[6]
+            race = race if race else tmp['race']
+            gender = gender if gender else tmp['gender']
+            pclass = pclass if pclass else tmp['class']
+            name = name if name else tmp['name']
+            b = b if b != None else tmp['unknow']
+            hit = hit if hit else tmp['hit']
+            icon = icon if icon else tmp['icon']
 
-        self[(id, pclass)] = (race, gender, pclass, name, b, hit, icon.strip())
+        self[(id, pclass)] = {'race':race, 'gender':gender, 'class':pclass, 'name':name, 'unknow':b, 'hit':hit, 'icon':icon.strip()}

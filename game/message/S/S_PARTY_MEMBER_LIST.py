@@ -4,7 +4,7 @@ from util.tipo import tipo
 
 class S_PARTY_MEMBER_LIST(object):
 
-    def __init__(self, tracker, time, direction, opcode, data, version):
+    def __init__(self, tracker, time, direction, opcode, data):
         dic = {}
         count = data.read(tipo.uint16)
         offset = data.read(tipo.uint16)
