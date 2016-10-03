@@ -51,5 +51,5 @@ if __name__ == '__main__':
         s_splitter.join(100)
         c_splitter.join(100)
         msg_handler.join(100)
-        print('Saindo')
+        print('Exiting')
         exit(0)
