@@ -1,6 +1,4 @@
-
 from sha import Sha
-
 from core.bytes import Bytes
 from cryptor_key import CryptorKey
 from util.util import to_bytes, to_int32

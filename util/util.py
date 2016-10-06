@@ -2,7 +2,11 @@ from _struct import unpack
 import binascii
 import os, sys, inspect
 import struct
+
+import wx
+
 from core.bytes import Bytes
+
 
 def singleton(class_):
     instances = {}
@@ -68,4 +72,26 @@ def to_int4(s):
 def to_hex(s):
     return binascii.hexlify(s)
 
+def hex_to_rgb(value):
+    value = value.lstrip('#')
+    lv = len(value)
+    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+
+def get_img(path, scale=None, width=None, height=None, rotate=None, color=None, gray=False):
+    img = wx.Image(path, wx.BITMAP_TYPE_ANY)
+    if color:
+        if type(color) == str: color = hex_to_rgb(color)
+        while len(color) < 4: color += (255,)
+        img = img.AdjustChannels(color[0] / 255., color[1] / 255., color[2] / 255., color[3] / 255.)
+    if gray:
+        img = img.ConvertToGreyscale()
+    if rotate:
+        w, h = img.GetSize()
+        img = img.Rotate(rotate, (w / 2., h / 2.))
+    if scale:
+        w, h = img.GetSize()
+        img = img.Rescale(w * scale, h * scale, quality=wx.IMAGE_QUALITY_HIGH)
+    elif width and height:
+        img = img.Rescale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
+    return wx.BitmapFromImage(img)
 

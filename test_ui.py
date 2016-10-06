@@ -1,6 +1,10 @@
+import sys
+
 from pywinauto.findwindows    import find_window
 from pywinauto.win32functions import SetForegroundWindow
 import wx
+
+from util.util import get_img
 
 
 class TrayIcon(wx.TaskBarIcon):
@@ -10,7 +14,7 @@ class TrayIcon(wx.TaskBarIcon):
     def __init__(self, frame):
         wx.TaskBarIcon.__init__(self)
         self.frame = frame
-        self.SetIcon(wx.IconFromBitmap(wx.Bitmap('icon.ico')), self.frame.GetTitle())
+        self.SetIcon(wx.IconFromBitmap(wx.Bitmap('res/icon.ico')), self.frame.GetTitle())
         self.Bind(wx.EVT_MENU, self.OnTaskBarClose, id=self.TBMENU_CLOSE)
         self.Bind(wx.EVT_MENU, self.OnTaskBarRestore, id=self.TBMENU_RESTORE)
         self.Bind(wx.EVT_TASKBAR_LEFT_DOWN, self.OnTaskBarLeftClick)
@@ -33,45 +37,108 @@ class TrayIcon(wx.TaskBarIcon):
         self.PopupMenu(menu)
         menu.Destroy()
 
-def GetRoundBitmap(w, h, r):
-    maskColor = wx.Color(0, 0, 0)
-    shownColor = wx.Color(5, 5, 5)
-    b = wx.EmptyBitmap(w, h)
-    dc = wx.MemoryDC(b)
-    dc.SetBackgroundMode(wx.TRANSPARENT)
-    dc.SetBrush(wx.Brush(maskColor))
-    dc.DrawRectangle(0, 0, w, h)
-    dc.SetBrush(wx.Brush(shownColor))
-    dc.SetPen(wx.Pen(shownColor))
-    dc.DrawRoundedRectangle(0, 0, w, h, r)
-    dc.SelectObject(wx.NullBitmap)
-    b.SetMaskColour(maskColor)
-    return b
+class CustomCheckBox(wx.PyControl):
+    def __init__(self, parent, img_unchecked, img_checked=None, img_hover=None, color_checked=None, color_unchecked=None, color_hover=None, width=12, height=12):
+        wx.PyControl.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.NO_BORDER, wx.DefaultValidator, "CustomCheckBox")
+        self.width = width
+        self.height = height
+        self.InitializeBitmaps(img_unchecked, img_checked if img_checked else img_unchecked, color_checked, color_unchecked, color_hover)
+        self.checked = False
+        self.hover = False
+        self.SetBackgroundColour(parent.GetBackgroundColour())
+        self.Bind(wx.EVT_PAINT, self.OnPaint)
+        self.Bind(wx.EVT_ERASE_BACKGROUND, self.OnEraseBackground)
+        self.Bind(wx.EVT_SIZE, self.OnSize)
+        self.Bind(wx.EVT_LEFT_UP, self.OnMouseUp)
+        self.Bind(wx.EVT_ENTER_WINDOW, self.OnEnterWindow)
+        self.Bind(wx.EVT_LEAVE_WINDOW, self.OnLeaveWindow)
 
-def GetRoundShape(w, h, r):
-    return wx.RegionFromBitmap(GetRoundBitmap(w, h, r))
+    def OnEnterWindow(self, event):
+        if not self.IsEnabled(): return
+        self.hover = True
+        self.Refresh()
 
-def hex_to_rgb(value):
-    value = value.lstrip('#')
-    lv = len(value)
-    return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
+    def OnLeaveWindow(self, event):
+        if not self.IsEnabled(): return
+        self.hover = False
+        self.Refresh()
 
-def get_img(path, scale=None, width=None, height=None, rotate=None, color=None):
-    img = wx.Image(path, wx.BITMAP_TYPE_ANY)
-    if color:
-        if type(color) == str: color = hex_to_rgb(color)
-        while len(color) < 4: color += (255,)
-        img = img.AdjustChannels(color[0] / 255., color[1] / 255., color[2] / 255., color[3] / 255.)
-    if rotate:
-        w, h = img.GetSize()
-        img = img.Rotate(rotate, (w / 2., h / 2.))
-    if scale:
-        w, h = img.GetSize()
-        img = img.Rescale(w * scale, h * scale, quality=wx.IMAGE_QUALITY_HIGH)
-    elif width and height:
-        img = img.Rescale(width, height, quality=wx.IMAGE_QUALITY_HIGH)
-    return wx.BitmapFromImage(img)
+    def OnMouseUp(self, event):
+        if not self.IsEnabled():
+            return
+        self.checked = not self.IsChecked()
+        self.SendCheckBoxEvent()
+        event.Skip()
 
+    def OnSize(self, event):
+        self.Refresh()
+
+    def InitializeBitmaps(self, img_unchecked, img_checked, color_checked, color_unchecked, color_hover):
+        self.bitmaps = {"CheckedEnable": get_img(img_checked, width=self.width, height=self.height, color=color_checked),
+                        "UnCheckedEnable": get_img(img_unchecked, width=self.width, height=self.height, color=color_unchecked),
+                        "CheckedHoverEnable": get_img(img_checked, width=self.width, height=self.height, color=color_hover),
+                        "UnCheckedHoverEnable": get_img(img_unchecked, width=self.width, height=self.height, color=color_hover),
+                        "CheckedDisable": get_img(img_checked, width=self.width, height=self.height, color=color_checked, gray=True),
+                        "UnCheckedDisable": get_img(img_unchecked, width=self.width, height=self.height, color=color_unchecked, gray=True)}
+
+
+    def GetBitmap(self):
+        if self.IsEnabled():
+            if self.IsChecked():
+                if self.IsHover(): return self.bitmaps["CheckedHoverEnable"]
+                return self.bitmaps["CheckedEnable"]
+            else:
+                if self.IsHover(): return self.bitmaps["UnCheckedHoverEnable"]
+                return self.bitmaps["UnCheckedEnable"]
+        else:
+            if self.IsChecked():
+                return self.bitmaps["CheckedDisable"]
+            else:
+                return self.bitmaps["UnCheckedDisable"]
+
+
+    def DoGetBestSize(self):
+        best = wx.Size(self.width, self.height)
+        self.CacheBestSize(best)
+        return best
+
+    def SetForegroundColour(self, colour):
+        wx.PyControl.SetForegroundColour(self, colour)
+        self.Refresh()
+
+
+    def SetBackgroundColour(self, colour):
+        wx.PyControl.SetBackgroundColour(self, colour)
+        self.Refresh()
+
+    def Enable(self, enable=True):
+        wx.PyControl.Enable(self, enable)
+        self.Refresh()
+
+    def IsChecked(self):
+        return self.checked
+
+    def IsHover(self):
+        return self.hover
+
+    def SetChecked(self, value=True):
+        self.checked = value
+        self.SendCheckBoxEvent()
+
+    def OnPaint(self, event):
+        dc = wx.BufferedPaintDC(self)
+        dc.Clear()
+        dc.DrawBitmap(self.GetBitmap(), 0, 0, True)
+
+    def OnEraseBackground(self, event):
+        pass
+
+    def SendCheckBoxEvent(self):
+        checkEvent = wx.CommandEvent(wx.wxEVT_COMMAND_CHECKBOX_CLICKED, self.GetId())
+        checkEvent.SetInt(int(self.checked))
+        checkEvent.SetEventObject(self)
+        self.GetEventHandler().ProcessEvent(checkEvent)
+        self.Refresh()
 
 class PanelMain(wx.Panel):
     def __init__(self, parent, *args, **kwargs):
@@ -88,28 +155,19 @@ class PanelMain(wx.Panel):
         self.txtTitle = wx.StaticText(self, wx.ID_ANY, u"Tera DPS ", wx.DefaultPosition, wx.DefaultSize, 0)
         gbSizer.Add(self.txtTitle, wx.GBPosition(0, 0), wx.GBSpan(1, 1), wx.ALL, 5)
         self.txtServer = wx.StaticText(self, wx.ID_ANY, u"Server Name", wx.DefaultPosition, wx.DefaultSize, 0)
-        gbSizer.Add(self.txtServer, wx.GBPosition(0, 1), wx.GBSpan(1, 1), wx.ALL | wx.ALIGN_CENTER_HORIZONTAL, 5)
+        gbSizer.Add(self.txtServer, wx.GBPosition(0, 1), wx.GBSpan(1, 1), wx.ALL | wx.ALIGN_CENTER_HORIZONTAL , 5)
 
-        self.btn_pin = wx.BitmapButton(self, wx.ID_ANY, get_img('pin-inverted.png', width=self.img_size, height=self.img_size, color='#FF2222'))
-        self.btn_pin.SetBitmapSelected(get_img('pin-inverted.png', width=self.img_size, height=self.img_size))
-        self.btn_pin.SetBackgroundColour(self.GetBackgroundColour())
-        self.btn_pin.SetWindowStyle(wx.BORDER_NONE)
-        self.btn_pin.Bind(wx.EVT_BUTTON, self.parent.TogglePin)
+
+        self.btn_pin = CustomCheckBox(self, 'res/pin-inverted.png', color_checked='#FF0000', color_hover='#1188FF')
+        self.btn_pin.Bind(wx.EVT_CHECKBOX, self.parent.TogglePin)
         gbSizer.Add(self.btn_pin, wx.GBPosition(0, 2), wx.GBSpan(1, 1), wx.ALL, 6)
 
-        self.btn_config = wx.BitmapButton(self, wx.ID_ANY, get_img('settings-inverted.png', width=self.img_size, height=self.img_size, color='#FF2222'))
-        self.btn_config.SetBitmapSelected(get_img('settings-inverted.png', width=self.img_size, height=self.img_size))
-        self.btn_config.SetBackgroundColour(self.GetBackgroundColour())
-        self.btn_config.SetWindowStyle(wx.BORDER_NONE)
-        self.btn_config.Bind(wx.EVT_BUTTON, self.parent.ToggleConfig)
+        self.btn_config = CustomCheckBox(self, 'res/settings-inverted.png', color_checked='#FF0000', color_hover='#1188FF')
+        self.btn_config.Bind(wx.EVT_CHECKBOX, self.parent.ToggleConfig)
         gbSizer.Add(self.btn_config, wx.GBPosition(0, 3), wx.GBSpan(1, 1), wx.ALL, 6)
 
-        self.btn_close = wx.BitmapButton(self, wx.ID_ANY, get_img('close-inverted.png', width=self.img_size, height=self.img_size))
-        self.btn_close.SetBitmapFocus(get_img('close-inverted.png', width=self.img_size, height=self.img_size, color='#1188FF'))
-        self.btn_close.SetBitmapSelected(get_img('close-inverted.png', width=self.img_size, height=self.img_size, color='#FF2222'))
-        self.btn_close.SetBackgroundColour(self.GetBackgroundColour())
-        self.btn_close.SetWindowStyle(wx.BORDER_NONE)
-        self.btn_close.Bind(wx.EVT_BUTTON, self.parent.OnClose)
+        self.btn_close = CustomCheckBox(self, 'res/close-inverted.png', color_hover='#1188FF')
+        self.btn_close.Bind(wx.EVT_CHECKBOX, self.parent.OnClose)
         gbSizer.Add(self.btn_close, wx.GBPosition(0, 4), wx.GBSpan(1, 1), wx.ALL, 6)
 
         self.line1 = wx.StaticLine(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
@@ -141,15 +199,36 @@ class PanelConfig(wx.Panel):
         self.SetFont(wx.Font(8, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL , wx.FONTWEIGHT_BOLD))
 
         gbSizer = wx.GridBagSizer()
-        self.txtTitle = wx.StaticText(self, wx.ID_ANY, u"Opacity ", wx.DefaultPosition, wx.DefaultSize, 0)
-        gbSizer.Add(self.txtTitle, wx.GBPosition(0, 0), wx.GBSpan(1, 1), wx.ALL, 5)
 
-        self.slider = wx.Slider(self, wx.ID_ANY, 200, 20, 255, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL)
+        txt = wx.StaticText(self, wx.ID_ANY, "Opacity", wx.DefaultPosition, wx.DefaultSize, 0)
+        gbSizer.Add(txt, wx.GBPosition(0, 0), wx.GBSpan(1, 1), wx.ALL, 5)
+
+        self.slider = wx.Slider(self, wx.ID_ANY, 200, 30, 255, wx.DefaultPosition, wx.DefaultSize, wx.SL_HORIZONTAL)
         self.slider.Bind(wx.EVT_SLIDER, self.slider_evt)
-        gbSizer.Add(self.slider, wx.GBPosition(0, 1), wx.GBSpan(1, 1), wx.ALL | wx.EXPAND, 0)
+        gbSizer.Add(self.slider, wx.GBPosition(0, 1), wx.GBSpan(1, 2), wx.ALL | wx.EXPAND, 0)
+
+        txt = wx.StaticText(self, wx.ID_ANY, "Only Boss", wx.DefaultPosition, wx.DefaultSize, 0)
+        gbSizer.Add(txt, wx.GBPosition(1, 0), wx.GBSpan(1, 1), wx.ALL, 5)
+
+        self.btn_boss = CustomCheckBox(self, 'res/checkbox1.png', 'res/checkbox2.png', width=15, height=15)
+        self.btn_boss.SetChecked(True)
+        gbSizer.Add(self.btn_boss, wx.GBPosition(1, 1), wx.GBSpan(1, 1), wx.ALL | wx.ALIGN_RIGHT, 5)
+
+        txt = wx.StaticText(self, wx.ID_ANY, "Include Party", wx.DefaultPosition, wx.DefaultSize, 0)
+        gbSizer.Add(txt, wx.GBPosition(2, 0), wx.GBSpan(1, 1), wx.ALL, 5)
+
+        self.btn_party = CustomCheckBox(self, 'res/checkbox1.png', 'res/checkbox2.png', width=15, height=15)
+        self.btn_party.SetChecked(True)
+        gbSizer.Add(self.btn_party, wx.GBPosition(2, 1), wx.GBSpan(1, 1), wx.ALL | wx.ALIGN_RIGHT, 5)
+
+        txt = wx.StaticText(self, wx.ID_ANY, "Include Others", wx.DefaultPosition, wx.DefaultSize, 0)
+        gbSizer.Add(txt, wx.GBPosition(3, 0), wx.GBSpan(1, 1), wx.ALL, 5)
+
+        self.btn_others = CustomCheckBox(self, 'res/checkbox1.png', 'res/checkbox2.png', width=15, height=15)
+        gbSizer.Add(self.btn_others, wx.GBPosition(3, 1), wx.GBSpan(1, 1), wx.ALL | wx.ALIGN_RIGHT, 5)
 
         self.line1 = wx.StaticLine(self, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.LI_HORIZONTAL)
-        gbSizer.Add(self.line1, wx.GBPosition(1, 0), wx.GBSpan(1, 2), wx.EXPAND | wx.ALL, 0)
+        gbSizer.Add(self.line1, wx.GBPosition(4, 0), wx.GBSpan(1, 2), wx.EXPAND | wx.ALL, 0)
 
         gbSizer.AddGrowableCol(1)
         self.SetSizer(gbSizer)
@@ -171,7 +250,6 @@ class TeraFrame(wx.Frame):
         self.SetBackgroundColour('#000000')
         self.SetForegroundColour('#FFFFFF')
         self.SetFont(wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL , wx.FONTWEIGHT_BOLD))
-        self.tbIcon = TrayIcon(self)
         self.Bind(wx.EVT_CLOSE, self.OnClose)
         self.Bind(wx.EVT_KEY_UP, self.OnKeyUp)
 
@@ -185,13 +263,36 @@ class TeraFrame(wx.Frame):
         self.panel_config = PanelConfig(self)
         gbSizer.Add(self.panel_config, wx.GBPosition(len(self.panels), 0), wx.GBSpan(1, 1), wx.EXPAND | wx.ALL, 0)
         self.panels.append(self.panel_config)
-        self.SetSizer(gbSizer)
-        self.Layout()
 
+        self.SetSizer(gbSizer)
+
+        self.Layout()
+        self.SetSize(self.CalcSize())
+        self.SetRoundShape()
         self.SetTransparent(self.panel_config.slider.GetValue())
         self.Show(True)
+        self.panel_main.btn_pin.SetChecked(True)
+        self.panel_main.btn_config.SetChecked(False)
         self.SetFocus()
-        self.ToggleConfig(None)
+        self.tbIcon = TrayIcon(self)
+
+    def GetRoundBitmap(self, w, h, r):
+        maskColor = wx.Colour(0, 0, 0)
+        shownColor = wx.Colour(5, 5, 5)
+        b = wx.EmptyBitmap(w, h)
+        dc = wx.MemoryDC(b)
+        dc.SetBackgroundMode(wx.TRANSPARENT)
+        dc.SetBrush(wx.Brush(maskColor))
+        dc.DrawRectangle(0, 0, w, h)
+        dc.SetBrush(wx.Brush(shownColor))
+        dc.SetPen(wx.Pen(shownColor))
+        dc.DrawRoundedRectangle(0, 0, w, h, r)
+        dc.SelectObject(wx.NullBitmap)
+        b.SetMaskColour(maskColor)
+        return b
+
+    def GetRoundShape(self, w, h, r):
+        return wx.RegionFromBitmap(self.GetRoundBitmap(w, h, r))
 
     def CalcSize(self):
         h = 0
@@ -201,28 +302,20 @@ class TeraFrame(wx.Frame):
 
     def SetRoundShape(self, event=None):
         w, h = self.GetSizeTuple()
-        self.SetShape(GetRoundShape(w, h, self.radius))
+        self.SetShape(self.GetRoundShape(w, h, self.radius))
 
     def TogglePin(self, event):
-        if self.pin:
-            self.pin = False
-            self.SetWindowStyleFlag((wx.CLIP_CHILDREN | wx.FRAME_NO_TASKBAR | wx.BORDER_NONE | wx.FRAME_SHAPED))
-        else:
-            self.pin = True
+        if event.IsChecked():
             SetForegroundWindow(find_window(title=self.GetTitle()))
             self.SetWindowStyleFlag((wx.CLIP_CHILDREN | wx.STAY_ON_TOP | wx.FRAME_NO_TASKBAR | wx.BORDER_NONE | wx.FRAME_SHAPED))
-        img = self.panel_main.btn_pin.GetBitmapLabel()
-        self.panel_main.btn_pin.SetBitmapLabel(self.panel_main.btn_pin.GetBitmapSelected())
-        self.panel_main.btn_pin.SetBitmapSelected(img)
+        else:
+            self.SetWindowStyleFlag((wx.CLIP_CHILDREN | wx.FRAME_NO_TASKBAR | wx.BORDER_NONE | wx.FRAME_SHAPED))
 
     def ToggleConfig(self, event):
-        if self.panel_config.IsShown():
-            self.panel_config.Hide()
-        else:
+        if event.IsChecked():
             self.panel_config.Show()
-        img = self.panel_main.btn_config.GetBitmapLabel()
-        self.panel_main.btn_config.SetBitmapLabel(self.panel_main.btn_config.GetBitmapSelected())
-        self.panel_main.btn_config.SetBitmapSelected(img)
+        else:
+            self.panel_config.Hide()
 
         self.SetSize(self.CalcSize())
         self.SetRoundShape()
