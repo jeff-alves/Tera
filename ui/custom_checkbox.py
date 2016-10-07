@@ -5,8 +5,10 @@ from util.util import img_transform
 
 
 class CustomCheckBox(wx.PyControl):
-    def __init__(self, parent, img_unchecked, img_checked=None, img_hover=None, color_checked=None, color_unchecked=None, color_hover=None, width=12, height=12):
+    def __init__(self, parent, img_unchecked, img_checked=None, img_hover=None, color_checked=None, color_unchecked=None, color_hover=None, width=12, height=12, name=None):
         wx.PyControl.__init__(self, parent, wx.ID_ANY, wx.DefaultPosition, wx.DefaultSize, wx.NO_BORDER, wx.DefaultValidator, "CustomCheckBox")
+        self.parent = parent
+        self.name = name
         self.width = width
         self.height = height
         self.InitializeBitmaps(img_unchecked, img_checked if img_checked else img_unchecked, color_checked, color_unchecked, color_hover)
@@ -106,3 +108,4 @@ class CustomCheckBox(wx.PyControl):
         checkEvent.SetEventObject(self)
         self.GetEventHandler().ProcessEvent(checkEvent)
         self.Refresh()
+        if self.name: self.parent.parent.config.WriteBool(self.name, self.checked)

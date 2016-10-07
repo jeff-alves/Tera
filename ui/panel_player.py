@@ -1,15 +1,16 @@
 import wx
-from ui.custom_checkbox import CustomCheckBox
-class CustomMenuBar(wx.Panel):
-    def __init__(self, parent, *args, **kwargs):
+
+
+class PanelPlayer(wx.Panel):
+    def __init__(self, parent, name, cls, *args, **kwargs):
         wx.Panel.__init__(self, parent, *args, **kwargs)
         self.parent = parent
         self.SetBackgroundColour(self.parent.GetBackgroundColour())
         self.SetForegroundColour(self.parent.GetForegroundColour())
         self.SetFont(self.parent.GetFont())
-        self.img_size = 12
-        self._dragPos = None
-        self.Bind(wx.EVT_MOTION, self.OnMouse)
+        self.img_size = 20
+        self.name = name
+        self.cls = cls
 
         gbSizer = wx.GridBagSizer()
         self.txtTitle = wx.StaticText(self, wx.ID_ANY, u"Tera DPS ", wx.DefaultPosition, wx.DefaultSize, 0)

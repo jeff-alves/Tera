@@ -1,7 +1,6 @@
 from pywinauto.findwindows    import find_window
 from pywinauto.win32functions import SetForegroundWindow
 import wx
-from wx.build import cfg_version
 
 from ui.custom_menu_bar import CustomMenuBar
 from ui.panel_config import PanelConfig
@@ -14,13 +13,15 @@ class MainWindow(wx.Frame):
     def __init__(self):
         style = (wx.CLIP_CHILDREN | wx.STAY_ON_TOP | wx.FRAME_NO_TASKBAR | wx.BORDER_NONE | wx.FRAME_SHAPED)
         wx.Frame.__init__(self, None, title='Tera DPS', style=style)
-        # self.config = wx.Config(self.GetTitle())
+        self.config = wx.Config('Tera DPS')
         self.panels = []
         self.radius = 12
         self.pin = True
         self.d_w, self.d_h = wx.DisplaySize()
-        self.SetSize(self.CalcSize())
-        self.SetPosition((self.d_w - self.GetSizeTuple()[0] - 10, 0 + 10))
+        self.SetSize((250, 0))
+        x = self.config.ReadInt('x')
+        y = self.config.ReadInt('y')
+        self.SetPosition((x if x else self.d_w - self.GetSizeTuple()[0] - 10, y if y else 10))
         self.SetBackgroundColour('#000000')
         self.SetForegroundColour('#FFFFFF')
         self.SetFont(wx.Font(9, wx.FONTFAMILY_SWISS, wx.FONTSTYLE_NORMAL , wx.FONTWEIGHT_BOLD))
@@ -40,19 +41,13 @@ class MainWindow(wx.Frame):
 
         self.SetSizer(gbSizer)
 
-        self.Layout()
-        self.SetSize(self.CalcSize())
-        self.SetRoundShape()
+        self.UpdateSize()
         self.SetTransparent(self.panel_config.slider.GetValue())
         self.Show(True)
         self.menu_bar.btn_pin.SetChecked(True)
         self.menu_bar.btn_config.SetChecked(False)
         self.SetFocus()
         self.tbIcon = TrayIcon(self)
-        # config = wx.Config('Tera DPS')
-        # config.Write('lalalal', 'uhuuu')
-        # config = wx.Config('Tera DPS')
-        # print(config.Read('lalalal'))
 
     def GetRoundBitmap(self, w, h, r):
         maskColor = wx.Colour(0, 0, 0)
@@ -76,11 +71,14 @@ class MainWindow(wx.Frame):
     def GetRoundShape(self, w, h, r):
         return wx.RegionFromBitmap(self.GetRoundBitmap(w, h, r))
 
-    def CalcSize(self):
-        h = 0
-        for w in self.panels:
-            if w.IsShown() : h += w.GetSizeTuple()[1]
-        return (250 , h - 2)
+    def UpdateSize(self):
+        w, h = 250, -2
+        for p in self.panels:
+            if p.IsShown() : h += p.GetSizeTuple()[1]
+
+        self.Layout()
+        self.SetSize((w, h))
+        self.SetRoundShape()
 
     def SetRoundShape(self, event=None):
         w, h = self.GetSizeTuple()
@@ -100,9 +98,7 @@ class MainWindow(wx.Frame):
         else:
             self.panel_config.Hide()
 
-        self.SetSize(self.CalcSize())
-        self.SetRoundShape()
-        self.SetFocus()
+        self.UpdateSize()
 
     def OnKeyUp(self, event):
         if event.ControlDown() and event.GetKeyCode() == wx.WXK_INSERT:
