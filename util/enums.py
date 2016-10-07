@@ -1,4 +1,4 @@
-from enum import Enum
+from aenum import Enum
 
 class DespawnReason(Enum):
     OutView = 1

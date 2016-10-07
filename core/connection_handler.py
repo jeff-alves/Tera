@@ -8,6 +8,7 @@ from game.services.server_database import ServerDatabase
 from game.services.skill_database import SkillDatabase
 from net.ip import Ip
 from net.tcp import Tcp
+from ui.main_window import MainWindow
 
 
 class ConnectionHandler(Thread):
@@ -32,6 +33,7 @@ class ConnectionHandler(Thread):
             if len(tcp.data) == 4  and tcp.data.get_array_int(1) == [1, 0, 0, 0]:
                 self.servers_db.selected = self.servers_db[ip.source_addr]
         print('Conected to: ' + self.servers_db.selected['name'])
+        MainWindow().SetServerName(self.servers_db.selected['name'])
         while len(self.server_keys) < 2 or len(self.client_keys) < 2:
             ip = Ip(self.queue.get())
             if ip.protocol != 6 or (ip.source_addr != self.servers_db.selected['ip'] and ip.destination_addr != self.servers_db.selected['ip']): continue

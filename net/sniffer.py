@@ -22,7 +22,7 @@ class Sniffer(Thread):
 
 
     def stop(self):
-        print('Finalizando Servidor...')
+        print('Finishing sniffer...')
         self.iniciado = True
         self.enable = False
         self.s.ioctl(socket.SIO_RCVALL, socket.RCVALL_OFF)

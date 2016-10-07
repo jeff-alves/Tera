@@ -1,9 +1,8 @@
 from distutils.core import setup
-import py2exe
 import glob
-import os
-import zlib
 import shutil
+import py2exe
+
 
 dist_dir = 'Release'
 build_dir = 'build'
@@ -58,24 +57,10 @@ MANIFEST_TEMPLATE = """
 </assembly>
 """
 
-def find_data_files(source,target,patterns):
-    if glob.has_magic(source) or glob.has_magic(target):
-        raise ValueError("Magic not allowed in src, target")
-    ret = {}
-    for pattern in patterns:
-        pattern = os.path.join(source,pattern)
-        for filename in glob.glob(pattern):
-            if os.path.isfile(filename):
-                targetpath = os.path.join(target,os.path.relpath(filename,source))
-                path = os.path.dirname(targetpath)
-                ret.setdefault(path,[]).append(filename)
-    return sorted(ret.items())
-
 class Target(object):
     def __init__(self, **kw):
         self.__dict__.update(kw)
 
-#data_files = find_data_files('res','res',['*',])
 data_files = [("res", glob.glob(r'res/*.*'))]
 includes = []
 excludes = ['_gtkagg', '_tkagg', 'bsddb', 'curses', 'email', 'pywin.debugger',
@@ -88,24 +73,24 @@ icon_resources = [(0, 'res/icon.ico')]
 bitmap_resources = []
 other_resources = [(24, 1, MANIFEST_TEMPLATE % dict(prog="Tera DPS"))]
 py26MSdll = glob.glob(r"c:\Dev\Py26MSdlls-9.0.21022.8\msvc\*.*")
-data_files += [("", py26MSdll),]
+data_files += [("", py26MSdll), ]
 
-GUI2Exe_Target_1 = Target(
-    script = "test_ui.py",
-    icon_resources = icon_resources,
-    bitmap_resources = bitmap_resources,
-    other_resources = other_resources,
-    dest_base = "Tera DPS",    
-    version = "0.1",
-    company_name = "No Company",
-    copyright = "No Copyrights",
-    name = "Tera DPS/BOT"
-    )
+windows = [{
+    'script':"test_ui.py",
+    'icon_resources':icon_resources,
+    'bitmap_resources':bitmap_resources,
+    'other_resources':other_resources,
+    'dest_base':"Tera DPS",
+    'version':"0.1",
+    'company_name':"No Company",
+    'copyright':"No Copyrights",
+    'name':"Tera DPS/BOT"
+}]
 
 setup(
-    data_files = data_files,
-    options = {"py2exe": {
-	    "compressed": True, 
+    data_files=data_files,
+    options={"py2exe": {
+	    "compressed": True,
 		"optimize": 2,
 		"includes": includes,
 		"excludes": excludes,
@@ -118,8 +103,8 @@ setup(
 		"ascii": False,
 		"custom_boot_script": '',
 	}},
-    zipfile = "lib\library.zip",
-    windows = [GUI2Exe_Target_1]
+    zipfile="lib\library.zip",
+    windows=windows
     )
 
 shutil.rmtree("build", ignore_errors=True)

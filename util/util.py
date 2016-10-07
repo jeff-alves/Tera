@@ -77,8 +77,7 @@ def hex_to_rgb(value):
     lv = len(value)
     return tuple(int(value[i:i + lv // 3], 16) for i in range(0, lv, lv // 3))
 
-def get_img(path, scale=None, width=None, height=None, rotate=None, color=None, gray=False):
-    img = wx.Image(path, wx.BITMAP_TYPE_ANY)
+def img_transform(img, scale=None, width=None, height=None, rotate=None, color=None, gray=False):
     if color:
         if type(color) == str: color = hex_to_rgb(color)
         while len(color) < 4: color += (255,)
